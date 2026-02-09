@@ -53,7 +53,7 @@ async def admin_action(c: CallbackQuery, bot: Bot, cfg: Config):
         await c.answer("Approved ✅")
 
         post_text = build_rate_post_caption(cfg, gender=gender, user_caption=user_caption)
-        kb = kb_view_post(cfg.bot_username, sub_id, cfg.donate_url)
+        kb = kb_view_post(cfg.bot_username, sub_id)
 
         if cfg.poster_photo:
             await bot.send_photo(
