@@ -4,7 +4,7 @@ from aiogram.types import CallbackQuery
 from bot.config import Config
 from bot.db import get_submission, set_submission_status
 from bot.keyboards import kb_view_post
-from bot.utils import is_member
+from bot.caption_builder import build_rate_post_caption
 
 router = Router()
 
@@ -18,7 +18,6 @@ async def admin_action(c: CallbackQuery, bot: Bot, cfg: Config):
         return
 
     parts = c.data.split(":")
-    # admin:approve:<id> atau admin:reject:<id>
     if len(parts) != 3:
         await c.answer("Format tidak valid.", show_alert=True)
         return
@@ -53,18 +52,7 @@ async def admin_action(c: CallbackQuery, bot: Bot, cfg: Config):
         await set_submission_status(sub_id, "approved")
         await c.answer("Approved ✅")
 
-        # Post ke channel rate pakai poster custom + caption custom + tombol deep link
-        user_caption_text = (user_caption or "").strip()
-        # bersihkan biar caption rapi
-        if not user_caption_text:
-            user_caption_text = ""
-
-        post_text = cfg.post_template.format(
-            gender=gender,
-            user_caption=user_caption_text
-        ).strip()
-
-        # tombol lihat pap => deep link /start pap_<id>
+        post_text = build_rate_post_caption(cfg, gender=gender, user_caption=user_caption)
         kb = kb_view_post(cfg.bot_username, sub_id, cfg.donate_url)
 
         if cfg.poster_photo:
@@ -81,7 +69,6 @@ async def admin_action(c: CallbackQuery, bot: Bot, cfg: Config):
                 reply_markup=kb
             )
 
-        # notif user
         try:
             await bot.send_message(user_id, "PAP kamu sudah di-approve ✅ dan diposting ke channel Rate.")
         except Exception:
