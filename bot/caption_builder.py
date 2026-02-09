@@ -1,38 +1,42 @@
 from bot.config import Config
 
-def build_rate_post_caption(cfg: Config, gender: str, user_caption: str | None) -> str:
+def build_rate_post_caption(cfg: Config, gender: str, user_caption: str | None, link: str) -> str:
     """
-    Output contoh:
-    Rate PAP
+    Format:
+    #cewe
+    Rate dong
 
-    rate aku dong 😳
+    Link pap:
+    https://t.me/...
 
-    Kasih rating di komentar!
-    #cowo
-    @RatePapChannel
+    Donate Pap langsung ke bot  @ratepapchannel
     """
     lines: list[str] = []
 
-    title = (cfg.post_title or "Rate PAP").strip()
-    if title:
-        lines.append(title)
-
-    cap = (user_caption or "").strip()
-    if cap:
-        lines.append("")
-        lines.append(cap)
-
-    # prompt rating (selalu ada)
-    prompt = (cfg.rate_prompt_text or "").strip()
-    if prompt:
-        lines.append("")
-        lines.append(prompt)
-
-    # footer hashtag + mention
+    # 1) hashtag dulu
     lines.append(f"#{gender}")
 
-    mention = (cfg.rate_channel_mention or "").strip()
-    if mention:
-        lines.append(mention)
+    # 2) caption user (wajib ada di contohmu)
+    cap = (user_caption or "").strip()
+    if cap:
+        lines.append(cap)
+    else:
+        # kalau user skip caption, pakai default (biar format tidak kosong)
+        default_cap = (cfg.default_post_caption or "Rate dong").strip()
+        lines.append(default_cap)
+
+    lines.append("")  # spasi
+
+    # 3) link label + link
+    link_label = (cfg.link_label_text or "Link pap:").strip()
+    lines.append(link_label)
+    lines.append(link)
+
+    lines.append("")  # spasi
+
+    # 4) donate line
+    donate_line = (cfg.donate_line_text or "").strip()
+    if donate_line:
+        lines.append(donate_line)
 
     return "\n".join(lines).strip()
