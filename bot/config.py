@@ -4,13 +4,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
 def _unescape_newlines(s: str | None) -> str:
     if s is None:
         return ""
-    # Ubah literal "\n" menjadi newline sungguhan
     return s.replace("\\n", "\n")
-
 
 @dataclass(frozen=True)
 class Config:
@@ -30,10 +27,10 @@ class Config:
     joined_text: str
     ask_caption_text: str
 
-    rate_channel_mention: str | None
-    post_title: str
-    rate_prompt_text: str
-
+    # NEW: post formatting texts
+    default_post_caption: str
+    link_label_text: str
+    donate_line_text: str
 
 def _parse_admin_ids(raw: str) -> list[int]:
     raw = (raw or "").strip()
@@ -45,7 +42,6 @@ def _parse_admin_ids(raw: str) -> list[int]:
         if x.isdigit():
             out.append(int(x))
     return out
-
 
 def load_config() -> Config:
     return Config(
@@ -71,10 +67,11 @@ def load_config() -> Config:
         )),
         ask_caption_text=_unescape_newlines(os.getenv(
             "ASK_CAPTION_TEXT",
-            'Silakan tulis caption PAP kamu.\\n\\nKetik /skip untuk tanpa caption.'
+            'Silakan tulis caption PAP kamu (contoh: "Rate dong").\\n\\nKetik /skip untuk default.'
         )),
 
-        rate_channel_mention=os.getenv("RATE_CHANNEL_MENTION") or None,
-        post_title=os.getenv("POST_TITLE", "Rate PAP"),
-        rate_prompt_text=os.getenv("RATE_PROMPT_TEXT", "Kasih rating di komentar!"),
+        # default post texts
+        default_post_caption=_unescape_newlines(os.getenv("DEFAULT_POST_CAPTION", "Rate dong")),
+        link_label_text=_unescape_newlines(os.getenv("LINK_LABEL_TEXT", "Link pap:")),
+        donate_line_text=_unescape_newlines(os.getenv("DONATE_LINE_TEXT", "Donate Pap langsung ke bot  @ratepapchannel")),
     )
