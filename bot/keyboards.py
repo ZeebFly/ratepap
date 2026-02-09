@@ -8,13 +8,13 @@ def kb_force_join(join_url: str) -> InlineKeyboardMarkup:
     ])
 
 
-def kb_main(donate_url: str) -> InlineKeyboardMarkup:
+def kb_main() -> InlineKeyboardMarkup:
+    # MENU UTAMA TANPA DONATE
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="💖 Donate", url=donate_url)],
         [
             InlineKeyboardButton(text="👧 Cewe", callback_data="gender:cewe"),
             InlineKeyboardButton(text="👦 Cowo", callback_data="gender:cowo"),
-        ],
+        ]
     ])
 
 
@@ -31,8 +31,8 @@ def deep_link(bot_username: str, sub_id: int) -> str:
     return f"https://t.me/{bot_username}?start=pap_{sub_id}"
 
 
-def kb_view_post(bot_username: str, sub_id: int, donate_url: str) -> InlineKeyboardMarkup:
+def kb_view_post(bot_username: str, sub_id: int) -> InlineKeyboardMarkup:
+    # Tombol KHUSUS untuk lihat PAP
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="👀 Lihat PAP", url=deep_link(bot_username, sub_id))],
-        [InlineKeyboardButton(text="💖 Donate", url=donate_url)],
+        [InlineKeyboardButton(text="👀 Lihat PAP", url=deep_link(bot_username, sub_id))]
     ])
