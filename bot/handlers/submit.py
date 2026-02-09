@@ -13,7 +13,6 @@ router = Router()
 
 @router.callback_query(F.data.startswith("gender:"))
 async def pick_gender(c: CallbackQuery, bot: Bot, state: FSMContext, cfg: Config):
-    # guard force-sub
     ok = await is_member(bot, cfg.force_channel_id, c.from_user.id)
     if not ok:
         await c.answer("Join channel dulu ya.", show_alert=True)
@@ -38,7 +37,6 @@ async def receive_media(m: Message, bot: Bot, state: FSMContext, cfg: Config):
         await m.answer("Kamu belum pilih gender. Klik /start.")
         return
 
-    # simpan media ke STORAGE (copy untuk privacy)
     copied = await m.copy_to(chat_id=cfg.storage_channel_id)
 
     user_caption = (m.caption or "").strip() or None
@@ -51,8 +49,8 @@ async def receive_media(m: Message, bot: Bot, state: FSMContext, cfg: Config):
         created_at=int(time.time())
     )
 
-    # kalau user belum kasih caption, minta caption dulu
     await state.update_data(last_sub_id=sub_id)
+
     if not user_caption:
         await state.set_state(Flow.waiting_caption)
         await m.answer(cfg.ask_caption_text)
@@ -75,6 +73,7 @@ async def receive_caption(m: Message, bot: Bot, state: FSMContext, cfg: Config):
         text = ""
 
     await set_submission_caption(sub_id, text if text else None)
+
     await m.answer("Oke ✅ Media kamu sudah masuk antrean approval.")
     await state.clear()
 
@@ -90,7 +89,6 @@ async def notify_admins(bot: Bot, cfg: Config, sub_id: int):
 
     for admin_id in cfg.admin_ids:
         try:
-            # kirim media preview ke admin (copy dari STORAGE)
             await bot.copy_message(
                 chat_id=admin_id,
                 from_chat_id=storage_chat_id,
@@ -109,5 +107,5 @@ async def notify_admins(bot: Bot, cfg: Config, sub_id: int):
                 reply_markup=kb_admin_approval(sub_id)
             )
         except Exception:
-            # kalau admin belum pernah chat bot, pengiriman bisa gagal
+            # Admin belum pernah /start bot -> bisa gagal kirim
             pass
