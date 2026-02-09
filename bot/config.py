@@ -19,7 +19,8 @@ class Config:
     start_photo: str | None
     poster_photo: str | None
 
-    welcome_text: str
+    not_join_text: str
+    joined_text: str
     ask_caption_text: str
 
     rate_channel_mention: str | None
@@ -52,11 +53,17 @@ def load_config() -> Config:
         start_photo=os.getenv("START_PHOTO"),
         poster_photo=os.getenv("POSTER_PHOTO"),
 
-        welcome_text=os.getenv("WELCOME_TEXT", "Welcome!"),
+        not_join_text=os.getenv(
+            "NOT_JOIN_TEXT",
+            "Kamu belum join channel.\nJoin dulu supaya bisa donate & lanjut ✅"
+        ),
+        joined_text=os.getenv(
+            "JOINED_TEXT",
+            "Welcome!\nSilakan donate dulu atau pilih gender 👇"
+        ),
         ask_caption_text=os.getenv("ASK_CAPTION_TEXT", "Kirim caption kamu."),
 
         rate_channel_mention=os.getenv("RATE_CHANNEL_MENTION"),
         post_title=os.getenv("POST_TITLE", "Rate PAP"),
         rate_prompt_text=os.getenv("RATE_PROMPT_TEXT", "Kasih rating di komentar!"),
     )
-
