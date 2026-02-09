@@ -11,12 +11,11 @@ router = Router()
 
 @router.message(CommandStart(deep_link=True))
 async def deeplink(m: Message, bot: Bot, cfg: Config):
-    # /start pap_<id>
     args = m.text.split(maxsplit=1)
     payload = args[1] if len(args) > 1 else ""
 
     if not payload.startswith("pap_"):
-        return  # /start biasa ditangani handler start.py
+        return
 
     ok = await is_member(bot, cfg.force_channel_id, m.from_user.id)
     if not ok:
