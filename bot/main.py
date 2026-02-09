@@ -5,18 +5,20 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from bot.config import load_config, Config
 from bot.db import init_db
 from bot.handlers import get_routers
+from bot.runtime_config import load_runtime_config
 
 async def main():
-    cfg: Config = load_config()
+    base_cfg: Config = load_config()
     await init_db()
 
-    bot = Bot(cfg.bot_token)
+    bot = Bot(base_cfg.bot_token)
     dp = Dispatcher(storage=MemoryStorage())
 
-    
+    # inject cfg (env + db overrides) untuk setiap update
     @dp.update.outer_middleware()
     async def cfg_middleware(handler, event, data):
-        data["cfg"] = cfg
+        runtime_cfg = await load_runtime_config(base_cfg)
+        data["cfg"] = runtime_cfg
         return await handler(event, data)
 
     for r in get_routers():
