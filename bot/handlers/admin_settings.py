@@ -86,12 +86,14 @@ async def set_msg(m: Message, state: FSMContext, cfg: Config):
     arg = parts[1].strip().lower() if len(parts) > 1 else ""
 
     mapping = {
-        "not_join": "not_join_text",
-        "joined": "joined_text",
-        "ask_caption": "ask_caption_text",
-        "rate_prompt": "rate_prompt_text",
-        "post_title": "post_title",
-        "mention": "rate_channel_mention",
+         "not_join": "not_join_text",
+         "joined": "joined_text",
+         "ask_caption": "ask_caption_text",
+
+         # NEW
+         "default_caption": "default_post_caption",
+         "link_label": "link_label_text",
+         "donate_line": "donate_line_text",
     }
     if arg not in mapping:
         await m.answer(
