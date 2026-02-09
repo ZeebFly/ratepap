@@ -5,9 +5,13 @@ from bot.db import get_all_settings
 def _to_int(s: str) -> int:
     return int(str(s).strip())
 
+def _t(s: str | None) -> str | None:
+    if s is None:
+        return None
+    return s.replace("\\n", "\n")
+
 async def load_runtime_config(base: Config) -> Config:
     s = await get_all_settings()
-
     cfg = base
 
     # channels
@@ -18,41 +22,36 @@ async def load_runtime_config(base: Config) -> Config:
     if "storage_channel_id" in s:
         cfg = replace(cfg, storage_channel_id=_to_int(s["storage_channel_id"]))
 
-    # images (file_id)
+    # images
     if "start_photo" in s:
-        cfg = replace(cfg, start_photo=s["start_photo"] or None)
+        cfg = replace(cfg, start_photo=(s["start_photo"] or None))
     if "poster_photo" in s:
-        cfg = replace(cfg, poster_photo=s["poster_photo"] or None)
+        cfg = replace(cfg, poster_photo=(s["poster_photo"] or None))
 
     # texts
-    def get_text(k: str) -> str | None:
-        v = s.get(k)
-        if v is None:
-            return None
-        return v.replace("\\n", "\n")
-
-    v = get_text("not_join_text")
+    v = _t(s.get("not_join_text"))
     if v is not None:
         cfg = replace(cfg, not_join_text=v)
 
-    v = get_text("joined_text")
+    v = _t(s.get("joined_text"))
     if v is not None:
         cfg = replace(cfg, joined_text=v)
 
-    v = get_text("ask_caption_text")
+    v = _t(s.get("ask_caption_text"))
     if v is not None:
         cfg = replace(cfg, ask_caption_text=v)
 
-    v = get_text("rate_prompt_text")
+    # NEW post texts
+    v = _t(s.get("default_post_caption"))
     if v is not None:
-        cfg = replace(cfg, rate_prompt_text=v)
+        cfg = replace(cfg, default_post_caption=v)
 
-    v = get_text("post_title")
+    v = _t(s.get("link_label_text"))
     if v is not None:
-        cfg = replace(cfg, post_title=v)
+        cfg = replace(cfg, link_label_text=v)
 
-    v = get_text("rate_channel_mention")
+    v = _t(s.get("donate_line_text"))
     if v is not None:
-        cfg = replace(cfg, rate_channel_mention=v)
+        cfg = replace(cfg, donate_line_text=v)
 
     return cfg
