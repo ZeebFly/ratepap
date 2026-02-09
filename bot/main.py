@@ -13,18 +13,14 @@ async def main():
     bot = Bot(cfg.bot_token)
     dp = Dispatcher(storage=MemoryStorage())
 
-    # inject config ke handler via dp["cfg"]
-    dp["cfg"] = cfg
-
-    for r in get_routers():
-        dp.include_router(r)
-
-    # dependency injection shortcut: aiogram bisa ambil dari dp context
-    # jadi kita register middleware kecil untuk menyuplai cfg arg ke handler
+    
     @dp.update.outer_middleware()
     async def cfg_middleware(handler, event, data):
         data["cfg"] = cfg
         return await handler(event, data)
+
+    for r in get_routers():
+        dp.include_router(r)
 
     await dp.start_polling(bot)
 
