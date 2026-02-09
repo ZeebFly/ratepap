@@ -3,13 +3,15 @@ from aiogram.types import CallbackQuery
 
 from bot.config import Config
 from bot.db import get_submission, set_submission_status
-from bot.keyboards import kb_view_post
 from bot.caption_builder import build_rate_post_caption
+from bot.keyboards import deep_link
 
 router = Router()
 
+
 def _is_admin(cfg: Config, user_id: int) -> bool:
     return user_id in set(cfg.admin_ids)
+
 
 @router.callback_query(F.data.startswith("admin:"))
 async def admin_action(c: CallbackQuery, bot: Bot, cfg: Config):
@@ -52,21 +54,21 @@ async def admin_action(c: CallbackQuery, bot: Bot, cfg: Config):
         await set_submission_status(sub_id, "approved")
         await c.answer("Approved ✅")
 
+        # Caption rapi + link teks (bukan tombol)
         post_text = build_rate_post_caption(cfg, gender=gender, user_caption=user_caption)
-        kb = kb_view_post(cfg.bot_username, sub_id)
+        link = deep_link(cfg.bot_username, sub_id)
+        post_text_with_link = f"{post_text}\n\nLihat PAP: {link}"
 
         if cfg.poster_photo:
             await bot.send_photo(
                 chat_id=cfg.rate_channel_id,
                 photo=cfg.poster_photo,
-                caption=post_text,
-                reply_markup=kb
+                caption=post_text_with_link
             )
         else:
             await bot.send_message(
                 chat_id=cfg.rate_channel_id,
-                text=post_text,
-                reply_markup=kb
+                text=post_text_with_link
             )
 
         try:
