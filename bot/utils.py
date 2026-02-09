@@ -9,7 +9,7 @@ async def is_member(bot: Bot, channel_id: int, user_id: int) -> bool:
         return False
 
 async def get_invite_link(bot: Bot, channel_id: int) -> str:
-    # untuk channel private; kalau public, kamu bisa hardcode sendiri
+    # untuk private channel; kalau channel kamu public, sebaiknya hardcode sendiri di env
     try:
         link = await bot.create_chat_invite_link(channel_id, creates_join_request=False)
         return link.invite_link
