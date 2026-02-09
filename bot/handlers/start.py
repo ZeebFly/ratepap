@@ -28,7 +28,7 @@ async def send_start_screen(bot: Bot, cfg: Config, m: Message, state: FSMContext
     else:
         await m.answer(caption, reply_markup=kb_main(cfg.donate_url))
 
-@router.message(CommandStart())
+@router.message(CommandStart(deep_link=False))
 async def start_cmd(m: Message, bot: Bot, state: FSMContext, cfg: Config):
     await send_start_screen(bot, cfg, m, state)
 
