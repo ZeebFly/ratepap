@@ -31,3 +31,5 @@ def kb_view_post(bot_username: str, sub_id: int, donate_url: str) -> InlineKeybo
         [InlineKeyboardButton(text="👀 Lihat PAP", url=deep_link(bot_username, sub_id))],
         [InlineKeyboardButton(text="💖 Donate", url=donate_url)]
     ])
+e", url=donate_url)]
+    ])
