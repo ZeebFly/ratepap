@@ -44,7 +44,7 @@ async def receive_media(m: Message, bot: Bot, state: FSMContext, cfg: Config):
         user_id=m.from_user.id,
         gender=gender,
         user_caption=user_caption,
-        storage_chat_id=copied.chat.id,
+        storage_chat_id=cfg.storage_channel_id,
         storage_message_id=copied.message_id,
         created_at=int(time.time())
     )
